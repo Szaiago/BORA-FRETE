@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreteLog - Meus Veículos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'navy': '#001f3f',
+            'executive-gray': '#4a5568'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-50">
+
+  <!-- Sidebar -->
+  <div class="fixed top-0 left-0 h-full w-64 bg-navy text-white shadow-lg z-50">
+    <div class="p-6 border-b border-gray-700">
+      <h1 class="text-2xl font-bold">FreteLog</h1>
+      <p class="text-sm text-gray-400 mt-1" id="userEmail"></p>
+    </div>
+
+    <nav class="p-4 space-y-2">
+      <a href="dashboard.html" class="block px-4 py-3 rounded-lg hover:bg-gray-700 transition">Início</a>
+      <a href="veiculos.html" class="block px-4 py-3 rounded-lg bg-gray-700">Meus Veículos</a>
+      <a href="ofertas-disponiveis.html" class="block px-4 py-3 rounded-lg hover:bg-gray-700 transition">Buscar Fretes</a>
+    </nav>
+
+    <div class="absolute bottom-0 w-full p-4 border-t border-gray-700">
+      <button onclick="handleLogout()" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition">Sair</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="ml-64 p-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <h2 class="text-3xl font-bold text-navy mb-2">Meus Veículos</h2>
+          <p class="text-executive-gray">Gerencie sua frota</p>
+        </div>
+        <button onclick="showAddVehicleForm()" class="bg-navy text-white px-6 py-3 rounded-lg hover:bg-blue-900 transition font-semibold">
+          + Adicionar Veículo
+        </button>
+      </div>
+
+      <!-- Formulário de Cadastro -->
+      <div id="formContainer" class="hidden mb-8">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+          <h3 class="text-xl font-bold text-navy mb-4">Cadastrar Novo Veículo</h3>
+          <form onsubmit="handleAddVehicle(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Veículo *</label>
+              <select id="tipoVeiculo" required onchange="updatePlacasFields()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+                <option value="">Selecione...</option>
+                <option value="Van">Van</option>
+                <option value="Fiorino">Fiorino</option>
+                <option value="3/4">3/4</option>
+                <option value="Toco">Toco</option>
+                <option value="Truck">Truck</option>
+                <option value="Carreta">Carreta</option>
+                <option value="Rodotrem">Rodotrem</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Marca *</label>
+              <input type="text" id="marca" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Ano *</label>
+              <input type="number" id="ano" required min="1900" max="2030" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Peso (toneladas) *</label>
+              <input type="number" id="pesoTon" required step="0.01" min="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Volume (m³) *</label>
+              <input type="number" id="volumeM3" required step="0.01" min="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Qtd Pallets *</label>
+              <input type="number" id="qtdPallets" required min="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+            </div>
+
+            <!-- Campos de Placa Dinâmicos -->
+            <div id="placaCavaloDiv" class="hidden">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Placa do Cavalo/Veículo *</label>
+              <input type="text" id="placaCavalo" maxlength="8" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+            </div>
+
+            <div id="placaCarreta1Div" class="hidden">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Placa da Carreta *</label>
+              <input type="text" id="placaCarreta1" maxlength="8" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+            </div>
+
+            <div id="placaCarreta2Div" class="hidden">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Placa da Carreta 2 *</label>
+              <input type="text" id="placaCarreta2" maxlength="8" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+            </div>
+
+            <div id="tipoCarroceriaDiv" class="hidden">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Carroceria *</label>
+              <select id="tipoCarroceria" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+                <option value="">Selecione...</option>
+                <option value="Baú">Baú</option>
+                <option value="Sider">Sider</option>
+                <option value="Aberta">Aberta</option>
+                <option value="Graneleira">Graneleira</option>
+                <option value="Container">Container</option>
+                <option value="Frigorífica">Frigorífica</option>
+                <option value="Tanque">Tanque</option>
+                <option value="Plataforma">Plataforma</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Foto URL</label>
+              <input type="url" id="fotoUrl" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+            </div>
+
+            <div class="md:col-span-2 flex gap-2">
+              <button type="submit" class="bg-navy text-white px-6 py-2 rounded-lg hover:bg-blue-900 transition font-semibold">Salvar Veículo</button>
+              <button type="button" onclick="hideAddVehicleForm()" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 transition">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Lista de Veículos -->
+      <div id="veiculosLista" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Veículos serão carregados aqui -->
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script type="module">
+    import { createClient } from 'https://unpkg.com/@supabase/supabase-js@2/dist/module/index.js';
+
+    const supabaseUrl = '{{ VITE_SUPABASE_URL }}';
+    const supabaseAnonKey = '{{ VITE_SUPABASE_ANON_KEY }}';
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+    window.supabase = supabase;
+  </script>
+  <script src="js/veiculos.js"></script>
+</body>
+</html>

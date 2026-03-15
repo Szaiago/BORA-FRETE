@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreteLog - Criar Oferta de Carga</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'navy': '#001f3f',
+            'executive-gray': '#4a5568'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-50">
+
+  <!-- Sidebar -->
+  <div class="fixed top-0 left-0 h-full w-64 bg-navy text-white shadow-lg z-50">
+    <div class="p-6 border-b border-gray-700">
+      <h1 class="text-2xl font-bold">FreteLog</h1>
+      <p class="text-sm text-gray-400 mt-1" id="userEmail"></p>
+    </div>
+
+    <nav class="p-4 space-y-2">
+      <a href="dashboard.html" class="block px-4 py-3 rounded-lg hover:bg-gray-700 transition">Início</a>
+      <a href="ofertas-carga.html" class="block px-4 py-3 rounded-lg bg-gray-700">Criar Oferta de Carga</a>
+      <a href="minhas-ofertas.html" class="block px-4 py-3 rounded-lg hover:bg-gray-700 transition">Minhas Ofertas</a>
+    </nav>
+
+    <div class="absolute bottom-0 w-full p-4 border-t border-gray-700">
+      <button onclick="handleLogout()" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition">Sair</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="ml-64 p-8">
+    <div class="max-w-4xl mx-auto">
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold text-navy mb-2">Criar Oferta de Carga</h2>
+        <p class="text-executive-gray">Preencha os dados da carga para encontrar motoristas</p>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        <form onsubmit="handleCreateOferta(event)" class="space-y-6">
+
+          <!-- Rota -->
+          <div>
+            <h3 class="text-lg font-bold text-navy mb-4">Rota</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cidade de Origem *</label>
+                <input type="text" id="origemCidade" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">UF Origem *</label>
+                <input type="text" id="origemUF" required maxlength="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy uppercase">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cidade de Destino *</label>
+                <input type="text" id="destinoCidade" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">UF Destino *</label>
+                <input type="text" id="destinoUF" required maxlength="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy uppercase">
+              </div>
+            </div>
+          </div>
+
+          <!-- Datas -->
+          <div>
+            <h3 class="text-lg font-bold text-navy mb-4">Datas e Horários</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Data de Carregamento *</label>
+                <input type="date" id="dataCarregamento" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Horário de Carregamento</label>
+                <input type="time" id="horaCarregamento" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Data de Entrega *</label>
+                <input type="date" id="dataEntrega" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Horário de Entrega</label>
+                <input type="time" id="horaEntrega" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+              </div>
+            </div>
+          </div>
+
+          <!-- Especificações -->
+          <div>
+            <h3 class="text-lg font-bold text-navy mb-4">Especificações do Veículo</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Veículo *</label>
+                <select id="tipoVeiculo" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+                  <option value="">Selecione...</option>
+                  <option value="Van">Van</option>
+                  <option value="Fiorino">Fiorino</option>
+                  <option value="3/4">3/4</option>
+                  <option value="Toco">Toco</option>
+                  <option value="Truck">Truck</option>
+                  <option value="Carreta">Carreta</option>
+                  <option value="Rodotrem">Rodotrem</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Carroceria *</label>
+                <select id="tipoCarroceria" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+                  <option value="">Selecione...</option>
+                  <option value="Baú">Baú</option>
+                  <option value="Sider">Sider</option>
+                  <option value="Aberta">Aberta</option>
+                  <option value="Graneleira">Graneleira</option>
+                  <option value="Container">Container</option>
+                  <option value="Frigorífica">Frigorífica</option>
+                  <option value="Tanque">Tanque</option>
+                  <option value="Plataforma">Plataforma</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tipo de Carga -->
+          <div>
+            <h3 class="text-lg font-bold text-navy mb-4">Tipo de Carga</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Carga *</label>
+                <select id="tipoCarga" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+                  <option value="">Selecione...</option>
+                  <option value="Seca">Seca</option>
+                  <option value="Refrigerada">Refrigerada</option>
+                  <option value="Perigosa">Perigosa</option>
+                  <option value="Químico">Químico</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Modelo de Carga *</label>
+                <select id="modeloCarga" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+                  <option value="">Selecione...</option>
+                  <option value="Caixas">Caixas</option>
+                  <option value="Maquinário">Maquinário</option>
+                  <option value="Sacarias">Sacarias</option>
+                  <option value="Ração">Ração</option>
+                  <option value="Roupa">Roupa</option>
+                  <option value="Eletrônicos">Eletrônicos</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Financeiro -->
+          <div>
+            <h3 class="text-lg font-bold text-navy mb-4">Financeiro</h3>
+            <div class="space-y-4">
+              <div class="flex items-center space-x-3">
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="freteCombinar" onchange="toggleFreteFields()" class="sr-only peer">
+                  <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-navy rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-navy"></div>
+                  <span class="ml-3 text-sm font-medium text-gray-700">Frete a Combinar</span>
+                </label>
+              </div>
+
+              <div id="valorFreteFields">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Valor Ofertado (R$) *</label>
+                    <input type="number" id="valorOfertado" step="0.01" min="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+                  </div>
+                  <div class="flex items-center">
+                    <label class="flex items-center cursor-pointer">
+                      <input type="checkbox" id="pedagioIncluso" class="mr-2">
+                      <span class="text-sm font-medium text-gray-700">Pedágio Incluso</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Pagamento</label>
+                    <select id="tipoPagamento" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+                      <option value="">Selecione...</option>
+                      <option value="Pamcard">Pamcard</option>
+                      <option value="Strava">Strava</option>
+                      <option value="PIX">PIX</option>
+                      <option value="Transferência">Transferência</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fator de Adiantamento</label>
+                    <input type="text" id="fatorAdiantamento" placeholder="Ex: 70% saída / 30% entrega" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-4">
+            <button type="submit" class="flex-1 bg-navy text-white py-3 rounded-lg hover:bg-blue-900 transition font-semibold">
+              Publicar Oferta
+            </button>
+            <a href="dashboard.html" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition text-center font-semibold">
+              Cancelar
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script type="module">
+    import { createClient } from 'https://unpkg.com/@supabase/supabase-js@2/dist/module/index.js';
+
+    const supabaseUrl = '{{ VITE_SUPABASE_URL }}';
+    const supabaseAnonKey = '{{ VITE_SUPABASE_ANON_KEY }}';
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+    window.supabase = supabase;
+  </script>
+  <script src="js/ofertas-carga.js"></script>
+</body>
+</html>

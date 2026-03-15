@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreteLog - Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'navy': '#001f3f',
+            'executive-gray': '#4a5568'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gradient-to-br from-navy to-gray-900 min-h-screen flex items-center justify-center p-4">
+
+  <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-8">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-navy mb-2">FreteLog</h1>
+      <p class="text-executive-gray">Sistema de Logística Integrada</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex mb-6 border-b border-gray-200">
+      <button onclick="showTab('login')" id="loginTab" class="flex-1 py-3 text-center font-semibold border-b-2 border-navy text-navy transition">
+        Login
+      </button>
+      <button onclick="showTab('cadastro')" id="cadastroTab" class="flex-1 py-3 text-center font-semibold border-b-2 border-transparent text-gray-500 hover:text-navy transition">
+        Cadastro
+      </button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginForm">
+      <form onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+          <input type="email" id="loginEmail" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+          <input type="password" id="loginPassword" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+        </div>
+        <button type="submit" class="w-full bg-navy text-white py-3 rounded-lg font-semibold hover:bg-blue-900 transition">
+          Entrar
+        </button>
+      </form>
+    </div>
+
+    <!-- Cadastro Form -->
+    <div id="cadastroForm" class="hidden">
+      <form onsubmit="handleCadastro(event)" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Usuário</label>
+          <select id="userType" onchange="updateCadastroFields()" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+            <option value="">Selecione...</option>
+            <option value="transportadora">Transportadora</option>
+            <option value="agenciador">Agenciador</option>
+            <option value="motorista">Motorista</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+          <input type="email" id="cadastroEmail" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+          <input type="password" id="cadastroPassword" required minlength="6" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+        </div>
+
+        <!-- Campos Transportadora -->
+        <div id="transportadoraFields" class="hidden space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Razão Social</label>
+            <input type="text" id="razaoSocial" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
+            <input type="text" id="cnpj" maxlength="18" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Inscrição Estadual</label>
+            <input type="text" id="ie" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+            <input type="text" id="telefoneTransp" maxlength="15" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+          </div>
+        </div>
+
+        <!-- Campos Agenciador -->
+        <div id="agenciadorFields" class="hidden space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+            <input type="text" id="nomeAgenciador" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Documento</label>
+            <select id="tipoDocAgenciador" onchange="updateDocLabel('agenciador')" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+              <option value="CPF">CPF</option>
+              <option value="CNPJ">CNPJ</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" id="labelDocAgenciador">CPF</label>
+            <input type="text" id="cpfCnpjAgenciador" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+            <input type="text" id="telefoneAgenciador" maxlength="15" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+          </div>
+        </div>
+
+        <!-- Campos Motorista -->
+        <div id="motoristaFields" class="hidden space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+            <input type="text" id="nomeMotorista" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Documento</label>
+            <select id="tipoDocMotorista" onchange="updateDocLabel('motorista')" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+              <option value="CPF">CPF</option>
+              <option value="CNPJ">CNPJ</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" id="labelDocMotorista">CPF</label>
+            <input type="text" id="cpfCnpjMotorista" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+            <input type="text" id="telefoneMotorista" maxlength="15" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-navy focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Habilitações</label>
+            <div class="space-y-2">
+              <label class="flex items-center">
+                <input type="checkbox" id="cnhC" class="mr-2">
+                <span>CNH Categoria C</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="cnhE" class="mr-2">
+                <span>CNH Categoria E</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" id="cursoMopp" class="mr-2">
+                <span>Curso MOPP</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full bg-navy text-white py-3 rounded-lg font-semibold hover:bg-blue-900 transition">
+          Cadastrar
+        </button>
+      </form>
+    </div>
+
+    <div id="message" class="mt-4 text-center text-sm"></div>
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script type="module">
+    import { createClient } from 'https://unpkg.com/@supabase/supabase-js@2/dist/module/index.js';
+
+    const supabaseUrl = '{{ VITE_SUPABASE_URL }}';
+    const supabaseAnonKey = '{{ VITE_SUPABASE_ANON_KEY }}';
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+    window.supabase = supabase;
+  </script>
+  <script src="js/login.js"></script>
+</body>
+</html>
