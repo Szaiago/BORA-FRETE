@@ -1,231 +1,165 @@
 <?php
 /**
- * ================================================================
- * SISTEMA DE LOGÍSTICA - CONFIGURAÇÕES GLOBAIS
- * ================================================================
+ * BORAFRETE - Arquivo de Configuração
+ * Conexão com banco de dados e constantes do sistema
  */
 
-// Iniciar sessão se ainda não foi iniciada
+// Iniciar sessão
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ================================================================
-// CONSTANTES DO SISTEMA
-// ================================================================
-define('BASE_URL', '');
-define('SITE_NAME', 'FreteBras');
-define('SITE_DESCRIPTION', 'Sistema de Gestão Logística');
-define('SITE_VERSION', '1.0.0');
-
-// ================================================================
-// CONFIGURAÇÕES DE BANCO DE DADOS
-// ================================================================
+// Configurações do banco de dados
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'fretelog');
+define('DB_NAME', 'borafrete');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');
 
-// ================================================================
-// CONFIGURAÇÕES DE TIMEZONE
-// ================================================================
+// URL base do sistema (AJUSTE CONFORME SEU AMBIENTE)
+define('BASE_URL', 'http://localhost/bora-frete/');
+
+// Configurações gerais
+define('SITE_NAME', 'BoraFrete');
+define('UPLOAD_DIR', __DIR__ . '/../public/uploads/');
+define('UPLOAD_URL', BASE_URL . 'public/uploads/');
+
+// Timezone
 date_default_timezone_set('America/Sao_Paulo');
 
-// ================================================================
-// CONFIGURAÇÕES DE ERRO (Desenvolvimento)
-// ================================================================
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Configurações de Email (SMTP)
+define('MAIL_HOST', 'smtp.hostinger.com');
+define('MAIL_PORT', 587);
+define('MAIL_USER', 'informativos@tac.creatertools.com');
+define('MAIL_PASS', 'Creater@2026');
+define('MAIL_FROM', 'informativos@tac.creatertools.com');
+define('MAIL_FROM_NAME', 'BoraFrete - TAC Corporation');
 
-// ================================================================
-// CONEXÃO COM BANCO DE DADOS (PDO)
-// ================================================================
+/**
+ * Conexão PDO com MySQL
+ */
 try {
     $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
     $options = [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => false,
+        PDO::ATTR_EMULATE_PREPARES => false,
     ];
 
     $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
 
 } catch (PDOException $e) {
-    // Em produção, não exiba detalhes do erro
-    die("Erro ao conectar com o banco de dados. Por favor, tente novamente mais tarde.");
-    // Para debug: die("Erro: " . $e->getMessage());
-}
-
-// ================================================================
-// FUNÇÕES AUXILIARES
-// ================================================================
-
-/**
- * Verifica se o usuário está logado
- */
-function isLoggedIn() {
-    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+    die("Erro na conexão com o banco de dados: " . $e->getMessage());
 }
 
 /**
- * Redireciona para uma página
+ * Função para verificar se usuário está logado
  */
-function redirect($url) {
-    header("Location: " . BASE_URL . "/" . $url);
-    exit();
-}
-
-/**
- * Protege páginas que requerem autenticação
- */
-function requireLogin() {
-    if (!isLoggedIn()) {
-        redirect('index.php?erro=acesso_negado');
+function verificarLogin() {
+    if (!isset($_SESSION['usuario_id'])) {
+        header('Location: ' . BASE_URL . 'index.php');
+        exit;
     }
 }
 
 /**
- * Sanitiza entrada de dados
+ * Função para sanitizar dados
  */
-function sanitizeInput($data) {
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
-    return $data;
+function sanitizar($data) {
+    return htmlspecialchars(strip_tags(trim($data)));
 }
 
 /**
- * Formata CPF
+ * Função para formatar CPF/CNPJ
  */
-function formatCPF($cpf) {
-    $cpf = preg_replace('/[^0-9]/', '', $cpf);
-    if (strlen($cpf) != 11) return $cpf;
-    return substr($cpf, 0, 3) . '.' . substr($cpf, 3, 3) . '.' . substr($cpf, 6, 3) . '-' . substr($cpf, 9, 2);
-}
+function formatarDocumento($documento) {
+    $documento = preg_replace('/[^0-9]/', '', $documento);
 
-/**
- * Formata CNPJ
- */
-function formatCNPJ($cnpj) {
-    $cnpj = preg_replace('/[^0-9]/', '', $cnpj);
-    if (strlen($cnpj) != 14) return $cnpj;
-    return substr($cnpj, 0, 2) . '.' . substr($cnpj, 2, 3) . '.' . substr($cnpj, 5, 3) . '/' . substr($cnpj, 8, 4) . '-' . substr($cnpj, 12, 2);
-}
-
-/**
- * Formata telefone
- */
-function formatPhone($phone) {
-    $phone = preg_replace('/[^0-9]/', '', $phone);
-    $len = strlen($phone);
-
-    if ($len == 11) {
-        return '(' . substr($phone, 0, 2) . ') ' . substr($phone, 2, 5) . '-' . substr($phone, 7, 4);
-    } elseif ($len == 10) {
-        return '(' . substr($phone, 0, 2) . ') ' . substr($phone, 2, 4) . '-' . substr($phone, 6, 4);
+    if (strlen($documento) == 11) {
+        // CPF: 000.000.000-00
+        return preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $documento);
+    } elseif (strlen($documento) == 14) {
+        // CNPJ: 00.000.000/0000-00
+        return preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/', '$1.$2.$3/$4-$5', $documento);
     }
 
-    return $phone;
+    return $documento;
 }
 
 /**
- * Formata moeda
+ * Função para formatar telefone
  */
-function formatMoney($value) {
-    return 'R$ ' . number_format($value, 2, ',', '.');
+function formatarTelefone($telefone) {
+    $telefone = preg_replace('/[^0-9]/', '', $telefone);
+
+    if (strlen($telefone) == 11) {
+        // (00) 00000-0000
+        return preg_replace('/(\d{2})(\d{5})(\d{4})/', '($1) $2-$3', $telefone);
+    } elseif (strlen($telefone) == 10) {
+        // (00) 0000-0000
+        return preg_replace('/(\d{2})(\d{4})(\d{4})/', '($1) $2-$3', $telefone);
+    }
+
+    return $telefone;
 }
 
 /**
- * Formata data brasileira
+ * Função para formatar moeda
  */
-function formatDate($date) {
-    if (empty($date)) return '';
-    $timestamp = strtotime($date);
-    return date('d/m/Y', $timestamp);
+function formatarMoeda($valor) {
+    return 'R$ ' . number_format($valor, 2, ',', '.');
 }
 
 /**
- * Formata data e hora brasileira
+ * Função para upload de arquivos
  */
-function formatDateTime($datetime) {
-    if (empty($datetime)) return '';
-    $timestamp = strtotime($datetime);
-    return date('d/m/Y H:i', $timestamp);
+function uploadArquivo($arquivo, $pasta = 'veiculos') {
+    if (!isset($arquivo) || $arquivo['error'] !== UPLOAD_ERR_OK) {
+        return null;
+    }
+
+    $extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    $nomeOriginal = $arquivo['name'];
+    $extensao = strtolower(pathinfo($nomeOriginal, PATHINFO_EXTENSION));
+
+    if (!in_array($extensao, $extensoesPermitidas)) {
+        return null;
+    }
+
+    $nomeArquivo = uniqid() . '_' . time() . '.' . $extensao;
+    $pastaDestino = UPLOAD_DIR . $pasta . '/';
+
+    if (!is_dir($pastaDestino)) {
+        mkdir($pastaDestino, 0755, true);
+    }
+
+    $caminhoCompleto = $pastaDestino . $nomeArquivo;
+
+    if (move_uploaded_file($arquivo['tmp_name'], $caminhoCompleto)) {
+        return $pasta . '/' . $nomeArquivo;
+    }
+
+    return null;
 }
 
 /**
- * Gera token de sessão
+ * Função para exibir mensagens flash
  */
-function generateToken($length = 32) {
-    return bin2hex(random_bytes($length));
+function setFlashMessage($tipo, $mensagem) {
+    $_SESSION['flash_message'] = [
+        'tipo' => $tipo, // success, error, warning, info
+        'mensagem' => $mensagem
+    ];
 }
 
-/**
- * Validação de CPF
- */
-function validaCPF($cpf) {
-    $cpf = preg_replace('/[^0-9]/', '', $cpf);
-
-    if (strlen($cpf) != 11) {
-        return false;
+function getFlashMessage() {
+    if (isset($_SESSION['flash_message'])) {
+        $msg = $_SESSION['flash_message'];
+        unset($_SESSION['flash_message']);
+        return $msg;
     }
-
-    if (preg_match('/(\d)\1{10}/', $cpf)) {
-        return false;
-    }
-
-    for ($t = 9; $t < 11; $t++) {
-        for ($d = 0, $c = 0; $c < $t; $c++) {
-            $d += $cpf[$c] * (($t + 1) - $c);
-        }
-        $d = ((10 * $d) % 11) % 10;
-        if ($cpf[$c] != $d) {
-            return false;
-        }
-    }
-
-    return true;
+    return null;
 }
 
-/**
- * Validação de CNPJ
- */
-function validaCNPJ($cnpj) {
-    $cnpj = preg_replace('/[^0-9]/', '', $cnpj);
-
-    if (strlen($cnpj) != 14) {
-        return false;
-    }
-
-    if (preg_match('/(\d)\1{13}/', $cnpj)) {
-        return false;
-    }
-
-    for ($i = 0, $j = 5, $soma = 0; $i < 12; $i++) {
-        $soma += $cnpj[$i] * $j;
-        $j = ($j == 2) ? 9 : $j - 1;
-    }
-
-    $resto = $soma % 11;
-
-    if ($cnpj[12] != ($resto < 2 ? 0 : 11 - $resto)) {
-        return false;
-    }
-
-    for ($i = 0, $j = 6, $soma = 0; $i < 13; $i++) {
-        $soma += $cnpj[$i] * $j;
-        $j = ($j == 2) ? 9 : $j - 1;
-    }
-
-    $resto = $soma % 11;
-
-    return $cnpj[13] == ($resto < 2 ? 0 : 11 - $resto);
-}
-
-/**
- * Validação de email
- */
-function validaEmail($email) {
-    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
-}
+// Incluir EmailHelper
+require_once __DIR__ . '/../lib/EmailHelper.php';

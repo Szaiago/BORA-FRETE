@@ -1,169 +1,127 @@
--- ================================================================
--- SISTEMA DE LOGÍSTICA - ESTILO FRETEBRAS
--- Script SQL para criação das tabelas
--- ================================================================
+-- ========================================
+-- SISTEMA BORAFRETE - BANCO DE DADOS
+-- ========================================
 
--- Tabela de Usuários (Multi-Perfil)
-CREATE TABLE IF NOT EXISTS users (
+CREATE DATABASE IF NOT EXISTS borafrete CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE borafrete;
+
+-- ========================================
+-- TABELA: usuarios
+-- ========================================
+CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tipo_perfil ENUM('transportadora', 'agenciador', 'motorista') NOT NULL,
-    tipo_documento ENUM('cpf', 'cnpj') NOT NULL,
-    documento VARCHAR(18) NOT NULL UNIQUE,
-    nome_completo VARCHAR(200) NOT NULL,
-    razao_social VARCHAR(200),
-    email VARCHAR(150) NOT NULL UNIQUE,
-    telefone VARCHAR(20) NOT NULL,
-    celular VARCHAR(20),
-    cep VARCHAR(10),
-    endereco VARCHAR(255),
-    numero VARCHAR(10),
-    complemento VARCHAR(100),
-    bairro VARCHAR(100),
-    cidade VARCHAR(100),
-    uf CHAR(2),
+    nome_razao_social VARCHAR(255) NOT NULL,
+    documento_tipo ENUM('cpf', 'cnpj') NOT NULL,
+    documento_numero VARCHAR(20) NOT NULL UNIQUE,
+    ie VARCHAR(20) NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
-    ativo TINYINT(1) DEFAULT 1,
-    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ultima_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_documento (documento),
+    telefone VARCHAR(20) NOT NULL,
+    mopp BOOLEAN DEFAULT FALSE,
+    cnh_categorias SET('C', 'D', 'E') NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_email (email),
+    INDEX idx_documento (documento_numero),
     INDEX idx_tipo_perfil (tipo_perfil)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Tabela de Veículos
+-- ========================================
+-- TABELA: veiculos
+-- ========================================
 CREATE TABLE IF NOT EXISTS veiculos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    tipo_veiculo ENUM('van', 'truck', '3/4', 'toco', 'carreta', 'bitrem', 'rodotrem') NOT NULL,
-    tipo_carroceria ENUM('bau', 'sider', 'graneleiro', 'cacamba', 'refrigerado', 'porta-container') NOT NULL,
-    placa_cavalo VARCHAR(10) NOT NULL,
-    placa_carreta VARCHAR(10),
-    placa_carreta2 VARCHAR(10),
-    renavam_cavalo VARCHAR(20),
-    renavam_carreta VARCHAR(20),
-    renavam_carreta2 VARCHAR(20),
-    ano_fabricacao_cavalo INT,
-    ano_modelo_cavalo INT,
-    marca_cavalo VARCHAR(50),
-    modelo_cavalo VARCHAR(50),
-    capacidade_peso DECIMAL(10,2) COMMENT 'Capacidade em toneladas',
-    capacidade_volume DECIMAL(10,2) COMMENT 'Capacidade em m³',
-    comprimento DECIMAL(10,2) COMMENT 'Comprimento em metros',
-    largura DECIMAL(10,2) COMMENT 'Largura em metros',
-    altura DECIMAL(10,2) COMMENT 'Altura em metros',
-    antt VARCHAR(50),
-    observacoes TEXT,
-    ativo TINYINT(1) DEFAULT 1,
-    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ultima_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    usuario_id INT NOT NULL,
+    tipo_veiculo ENUM('van', 'fiorino', '3/4', 'toco', 'truck', 'carreta', 'rodotrem') NOT NULL,
+    tipo_carroceria VARCHAR(100) NULL,
+    marca VARCHAR(100) NOT NULL,
+    ano INT NOT NULL,
+    placa_1 VARCHAR(10) NOT NULL,
+    placa_2 VARCHAR(10) NULL,
+    placa_3 VARCHAR(10) NULL,
+    capacidade_peso DECIMAL(10,2) NOT NULL,
+    capacidade_m3 DECIMAL(10,2) NULL,
+    qtd_pallets INT NULL,
+    foto VARCHAR(255) NULL,
+    disponivel BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    INDEX idx_usuario (usuario_id),
     INDEX idx_tipo_veiculo (tipo_veiculo),
-    INDEX idx_user_id (user_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    INDEX idx_disponivel (disponivel)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Tabela de Ofertas de Carga
+-- ========================================
+-- TABELA: ofertas
+-- ========================================
 CREATE TABLE IF NOT EXISTS ofertas (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    tipo_oferta ENUM('carga_disponivel', 'frete_disponivel') NOT NULL DEFAULT 'carga_disponivel',
-    titulo VARCHAR(200) NOT NULL,
-    descricao TEXT,
-
-    -- Origem
-    cidade_origem VARCHAR(100) NOT NULL,
-    uf_origem CHAR(2) NOT NULL,
-
-    -- Destino
-    cidade_destino VARCHAR(100) NOT NULL,
-    uf_destino CHAR(2) NOT NULL,
-
-    -- Detalhes da Carga
-    tipo_carga VARCHAR(100),
-    peso_total DECIMAL(10,2) COMMENT 'Peso em toneladas',
-    valor_mercadoria DECIMAL(12,2),
-
-    -- Dimensões
-    quantidade_pallets INT,
-    comprimento DECIMAL(10,2) COMMENT 'Comprimento em metros',
-    largura DECIMAL(10,2) COMMENT 'Largura em metros',
-    altura DECIMAL(10,2) COMMENT 'Altura em metros',
-    cubagem DECIMAL(10,2) COMMENT 'Cubagem calculada em m³',
-
-    -- Tipo de Carroceria Necessária
-    tipo_carroceria_necessaria ENUM('bau', 'sider', 'graneleiro', 'cacamba', 'refrigerado', 'porta-container', 'qualquer'),
-
-    -- Valores
-    frete_a_combinar TINYINT(1) DEFAULT 0,
-    valor_frete DECIMAL(12,2),
-
-    -- Datas
-    data_coleta DATE,
-    data_entrega DATE,
-
-    -- Status
-    status ENUM('ativa', 'em_negociacao', 'finalizada', 'cancelada') DEFAULT 'ativa',
-
-    -- Contato
-    contato_nome VARCHAR(150),
-    contato_telefone VARCHAR(20),
-    contato_email VARCHAR(150),
-
-    observacoes TEXT,
-    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ultima_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_cidade_origem (cidade_origem),
-    INDEX idx_cidade_destino (cidade_destino),
+    transportadora_id INT NOT NULL,
+    origem_cidade VARCHAR(255) NOT NULL,
+    origem_uf CHAR(2) NOT NULL,
+    destino_cidade VARCHAR(255) NOT NULL,
+    destino_uf CHAR(2) NOT NULL,
+    data_carregamento DATE NOT NULL,
+    hora_carregamento TIME NULL,
+    data_entrega DATE NOT NULL,
+    hora_entrega TIME NULL,
+    tipo_veiculo ENUM('van', 'fiorino', '3/4', 'toco', 'truck', 'carreta', 'rodotrem') NOT NULL,
+    tipo_carroceria VARCHAR(100) NULL,
+    tipo_carga ENUM('seca', 'refrigerada', 'congelada', 'perigosa', 'quimica') NOT NULL,
+    modelo_carga ENUM('caixas', 'maquinario', 'sacarias', 'racao', 'roupa', 'eletronicos') NOT NULL,
+    peso DECIMAL(10,2) NOT NULL,
+    cubagem DECIMAL(10,2) NULL,
+    pallets INT NULL,
+    frete_combinar BOOLEAN DEFAULT FALSE,
+    valor_frete DECIMAL(10,2) NULL,
+    pedagio_incluso BOOLEAN DEFAULT FALSE,
+    tipo_pagamento VARCHAR(100) NULL,
+    fator_pagamento VARCHAR(20) NULL,
+    status ENUM('ativa', 'em_negociacao', 'fechada', 'cancelada') DEFAULT 'ativa',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (transportadora_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    INDEX idx_transportadora (transportadora_id),
+    INDEX idx_origem (origem_uf, origem_cidade),
+    INDEX idx_destino (destino_uf, destino_cidade),
     INDEX idx_status (status),
-    INDEX idx_tipo_oferta (tipo_oferta),
-    INDEX idx_data_coleta (data_coleta)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    INDEX idx_data_carregamento (data_carregamento)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Tabela de Propostas/Negociações
-CREATE TABLE IF NOT EXISTS propostas (
+-- ========================================
+-- TABELA: password_resets
+-- ========================================
+CREATE TABLE IF NOT EXISTS password_resets (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    oferta_id INT NOT NULL,
-    user_id INT NOT NULL COMMENT 'Usuário que fez a proposta',
-    veiculo_id INT,
-    valor_proposta DECIMAL(12,2),
-    mensagem TEXT,
-    status ENUM('pendente', 'aceita', 'recusada', 'cancelada') DEFAULT 'pendente',
-    data_proposta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_resposta TIMESTAMP NULL,
+    usuario_id INT NOT NULL,
+    token VARCHAR(64) NOT NULL,
+    expiracao DATETIME NOT NULL,
+    usado BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    INDEX idx_token (token),
+    INDEX idx_expiracao (expiracao),
+    INDEX idx_usado (usado)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-    FOREIGN KEY (oferta_id) REFERENCES ofertas(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (veiculo_id) REFERENCES veiculos(id) ON DELETE SET NULL,
-    INDEX idx_oferta_id (oferta_id),
-    INDEX idx_user_id (user_id),
-    INDEX idx_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- ========================================
+-- DADOS DE TESTE
+-- ========================================
 
--- Tabela de Sessões (para controle de login)
-CREATE TABLE IF NOT EXISTS sessions (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    session_token VARCHAR(255) NOT NULL UNIQUE,
-    ip_address VARCHAR(45),
-    user_agent TEXT,
-    ultimo_acesso TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+-- Usuario motorista (senha: 123456)
+INSERT INTO usuarios (tipo_perfil, nome_razao_social, documento_tipo, documento_numero, email, senha, telefone, mopp, cnh_categorias)
+VALUES ('motorista', 'João Silva', 'cpf', '12345678900', 'motorista@borafrete.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '(11) 98765-4321', TRUE, 'C,D,E');
 
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_session_token (session_token),
-    INDEX idx_user_id (user_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- Usuario transportadora (senha: 123456)
+INSERT INTO usuarios (tipo_perfil, nome_razao_social, documento_tipo, documento_numero, ie, email, senha, telefone)
+VALUES ('transportadora', 'Transportadora Rápida LTDA', 'cnpj', '12345678000190', '123456789', 'transportadora@borafrete.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '(11) 3333-4444');
 
--- Inserir um usuário administrador padrão (senha: admin123)
-INSERT INTO users (tipo_perfil, tipo_documento, documento, nome_completo, email, telefone, senha, ativo)
-VALUES (
-    'transportadora',
-    'cnpj',
-    '00.000.000/0001-00',
-    'Administrador do Sistema',
-    'admin@fretebras.com.br',
-    '(11) 99999-9999',
-    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-    1
-);
+-- Veiculos de teste
+INSERT INTO veiculos (usuario_id, tipo_veiculo, tipo_carroceria, marca, ano, placa_1, capacidade_peso, capacidade_m3, qtd_pallets, disponivel)
+VALUES (1, 'van', NULL, 'Mercedes Sprinter', 2021, 'BFA-1234', 1500.00, 15.00, 8, TRUE);
+
+INSERT INTO veiculos (usuario_id, tipo_veiculo, tipo_carroceria, marca, ano, placa_1, capacidade_peso, capacidade_m3, qtd_pallets, disponivel)
+VALUES (1, 'van', NULL, 'Renault Kangoo Z.E.', 2023, 'BFA-5678', 800.00, 4.50, 4, TRUE);
+
+-- ========================================
+-- FIM DO SCRIPT
+-- ========================================

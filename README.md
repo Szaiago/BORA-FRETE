@@ -1,234 +1,239 @@
-# Sistema de Logística - Estilo Fretebras
+# 🚛 BORAFRETE - Sistema de Logística de Fretes
 
-Sistema completo de gestão logística desenvolvido em **PHP Puro** com **JavaScript Vanilla**, seguindo arquitetura monolítica tradicional.
+Sistema completo de gestão de fretes e logística desenvolvido em PHP, MySQL e JavaScript Vanilla.
 
-## Características Principais
+---
 
-### Tecnologias
-- PHP 7.4+ (PDO para banco de dados)
-- MySQL 5.7+
-- JavaScript Vanilla (sem frameworks)
-- Bootstrap 5 (apenas Grid e componentes básicos)
-- CSS Customizado (design premium)
+## 📋 Tecnologias Utilizadas
 
-### Funcionalidades
-- **Multi-Perfil**: Transportadora, Agenciador e Motorista
-- **Cadastro de Veículos**: Lógica dinâmica de placas (Van, Truck, Carreta, Rodotrem)
-- **Cadastro de Ofertas**: Campos condicionais e integração com API do IBGE
-- **Gestão Completa**: Dashboard, listagens, propostas
-- **Autenticação Segura**: Sistema de login com sessões
-- **Design Premium**: Interface moderna com Azul Marinho, Preto e Branco
+- **Backend**: PHP 7.4+ com PDO
+- **Banco de Dados**: MySQL 5.7+
+- **Frontend**: HTML5, CSS3, JavaScript Vanilla
+- **Design**: Glassmorphism com cores azuis
+- **API Externa**: IBGE (Estados e Municípios)
 
-## Estrutura de Pastas
+---
 
-```
-/
-├── config/
-│   └── config.php              # Configurações e conexão PDO
-├── processamento/
-│   ├── login.php               # Processamento de login
-│   ├── logout.php              # Processamento de logout
-│   ├── salvar-perfil.php       # Processamento de cadastro/edição
-│   ├── salvar-veiculo.php      # Processamento de veículos
-│   └── salvar-oferta.php       # Processamento de ofertas
-├── views/
-│   ├── layout/
-│   │   ├── header.php          # Header com menu lateral
-│   │   └── footer.php          # Footer
-│   └── modais/                 # Modais separados (futuro)
-├── public/
-│   ├── css/
-│   │   └── style.css           # Estilos customizados
-│   └── js/
-│       ├── ibge-api.js         # Integração com API do IBGE
-│       ├── veiculo-placas.js   # Lógica de placas dinâmicas
-│       ├── oferta-form.js      # Lógica do formulário de oferta
-│       └── perfil-form.js      # Lógica do formulário de perfil
-├── database.sql                # Script de criação do banco
-├── index.php                   # Página de login
-├── dashboard.php               # Dashboard principal
-├── perfil.php                  # Cadastro/Edição de perfil
-├── cadastro-veiculo.php        # Cadastro de veículos
-└── cadastro-oferta.php         # Cadastro de ofertas
-```
-
-## Instalação
+## 🚀 Instalação
 
 ### 1. Requisitos
-- Apache 2.4+ ou Nginx
+
+- XAMPP, WAMP, MAMP ou servidor PHP local
 - PHP 7.4 ou superior
 - MySQL 5.7 ou superior
-- Extensões PHP: PDO, PDO_MySQL
+- Navegador moderno (Chrome, Firefox, Edge)
 
-### 2. Configuração do Banco de Dados
+### 2. Configurar o Banco de Dados
 
-Crie um banco de dados MySQL:
+1. Abra o phpMyAdmin
+2. Crie um novo banco de dados chamado `borafrete`
+3. Importe o arquivo `database.sql` localizado na raiz do projeto
+4. O SQL criará todas as tabelas e dados de teste automaticamente
 
-```sql
-CREATE DATABASE logistica_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
+**Usuários de Teste:**
 
-Importe o arquivo `database.sql`:
+| Tipo | Email | Senha |
+|------|-------|-------|
+| Motorista | motorista@borafrete.com | 123456 |
+| Transportadora | transportadora@borafrete.com | 123456 |
 
-```bash
-mysql -u root -p logistica_db < database.sql
-```
+### 3. Configurar o Projeto
 
-### 3. Configuração do Sistema
+1. Copie a pasta do projeto para o diretório do servidor web:
+   - XAMPP: `C:\xampp\htdocs\borafrete\`
+   - WAMP: `C:\wamp64\www\borafrete\`
+   - MAMP: `/Applications/MAMP/htdocs/borafrete/`
 
-Edite o arquivo `config/config.php` e ajuste as configurações:
+2. Edite o arquivo `config/config.php` e ajuste as configurações:
 
 ```php
-// Configurações de Banco de Dados
+// Configurações do banco de dados
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'logistica_db');
-define('DB_USER', 'root');
-define('DB_PASS', 'sua_senha');
+define('DB_NAME', 'borafrete');
+define('DB_USER', 'root');        // Ajuste se necessário
+define('DB_PASS', '');            // Ajuste se necessário
 
-// URL Base do Sistema
-define('BASE_URL', 'http://localhost:8000');
+// URL base do sistema (IMPORTANTE!)
+define('BASE_URL', 'http://localhost/borafrete/');
 ```
 
-### 4. Permissões
+3. Certifique-se de que a pasta `public/uploads/` tem permissão de escrita:
+   - No Windows: clique com botão direito > Propriedades > Segurança
+   - No Linux/Mac: `chmod -R 755 public/uploads/`
 
-Configure as permissões adequadas:
+### 4. Acessar o Sistema
 
-```bash
-chmod -R 755 /caminho/do/projeto
-chmod -R 777 /caminho/do/projeto/public
+1. Inicie o servidor Apache e MySQL
+2. Acesse: `http://localhost/borafrete/`
+3. Faça login com um dos usuários de teste
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+borafrete/
+│
+├── config/
+│   └── config.php                  # Configurações e conexão PDO
+│
+├── public/
+│   ├── css/
+│   │   └── style.css               # Estilos (Glassmorphism)
+│   ├── js/
+│   │   ├── main.js                 # JavaScript principal + lógica de placas
+│   │   └── ibge.js                 # Integração API IBGE
+│   ├── img/                        # Imagens do sistema
+│   └── uploads/                    # Upload de fotos de veículos
+│
+├── views/
+│   ├── layout/
+│   │   ├── header.php              # Cabeçalho do sistema
+│   │   ├── footer.php              # Rodapé
+│   │   └── sidebar.php             # Menu lateral (futuro)
+│   ├── dashboard.php               # Dashboard principal
+│   ├── cadastro-veiculo.php        # Cadastro de veículos
+│   ├── cadastro-oferta.php         # Cadastro de ofertas
+│   └── perfil.php                  # Perfil do usuário
+│
+├── processamento/
+│   ├── auth.php                    # Autenticação de usuários
+│   ├── logout.php                  # Logout
+│   ├── salvar_veiculo.php          # Processamento de veículos
+│   ├── salvar_oferta.php           # Processamento de ofertas
+│   └── atualizar_disponibilidade.php  # AJAX disponibilidade
+│
+├── database.sql                    # Script SQL completo
+├── index.php                       # Página de login
+└── README.md                       # Este arquivo
 ```
 
-### 5. Servidor Web
+---
 
-#### Apache
-Configure o VirtualHost ou use o `.htaccess`:
+## ⚙️ Funcionalidades
 
-```apache
-<VirtualHost *:80>
-    DocumentRoot "/caminho/do/projeto"
-    ServerName logistica.local
+### ✅ Sistema de Login
+- Autenticação segura com `password_hash`
+- Sessões PHP
+- Proteção de rotas
 
-    <Directory "/caminho/do/projeto">
-        AllowOverride All
-        Require all granted
-    </Directory>
-</VirtualHost>
-```
+### ✅ Dashboard
+- Visualização de veículos cadastrados
+- Mapa integrado (Google Maps)
+- Toggle de disponibilidade de veículo
+- Cards com design glassmorphism
 
-#### PHP Built-in Server (Desenvolvimento)
-```bash
-php -S localhost:8000
-```
+### ✅ Cadastro de Veículos
+- Tipos: Van, Fiorino, 3/4, Toco, Truck, Carreta, Rodotrem
+- **Lógica de Placas Dinâmica:**
+  - Van/Fiorino/3/4/Toco/Truck: 1 placa
+  - Carreta: 2 placas
+  - Rodotrem: 3 placas
+- Upload de foto
+- Capacidades (peso, volume, pallets)
 
-## Credenciais Padrão
+### ✅ Cadastro de Ofertas
+- Seleção de origem/destino via **API IBGE**
+- Datas e horários de carregamento/entrega
+- Tipos de carga (seca, refrigerada, congelada, etc)
+- Financeiro:
+  - Frete a combinar (toggle)
+  - Valor + pedágio incluso
+  - Tipo e fator de pagamento
 
-- **Email**: admin@fretebras.com.br
-- **Senha**: admin123
+### ✅ Perfil de Usuário
+- Edição de dados pessoais
+- Alteração de senha
+- Informações de motorista (MOPP, CNH)
 
-## Funcionalidades Detalhadas
+---
 
-### Cadastro Multi-Perfil
+## 🎨 Design
 
-O sistema suporta 3 tipos de perfil:
-- **Transportadora**: Empresa com frota de veículos
-- **Agenciador**: Intermediário de cargas
-- **Motorista**: Motorista autônomo
+- **Estilo**: Glassmorphism (blur + transparência)
+- **Cores**: Azul #1E3A8A + Azul Claro #4A90E2
+- **Bordas**: Arredondadas (20px)
+- **Sombras**: Suaves e modernas
+- **Responsivo**: Mobile, Tablet e Desktop
 
-Cada perfil pode ser CPF ou CNPJ, com validações automáticas.
+---
 
-### Cadastro de Veículos
+## 🔒 Segurança
 
-Lógica inteligente de placas baseada no tipo:
-- **Van/Truck/3-4/Toco**: 1 campo de placa
-- **Carreta/Bitrem**: 2 campos (Cavalo + Carreta)
-- **Rodotrem**: 3 campos (Cavalo + Carreta + Carreta 2)
+- ✅ Senhas criptografadas com `password_hash`
+- ✅ Prepared Statements (PDO) contra SQL Injection
+- ✅ Sanitização de dados com `htmlspecialchars`
+- ✅ Validação de sessões
+- ✅ Proteção de rotas (verificarLogin)
 
-Os campos são exibidos/ocultados automaticamente via JavaScript.
+---
 
-### Cadastro de Ofertas
+## 📡 API IBGE
 
-Integração com API do IBGE:
-- Preenchimento automático de UF e Cidades
-- Validação de origem e destino
-- Campos condicionais:
-  - "Frete a Combinar" oculta campo de valor
-  - Cálculo automático de cubagem (C x L x A)
-  - Validação de datas (entrega >= coleta)
+O sistema integra automaticamente com a API oficial do IBGE para:
 
-### API do IBGE
+- Carregar todos os estados brasileiros
+- Carregar municípios por estado
+- Cache inteligente para melhor performance
+- Pré-carregamento de estados mais populosos
 
-Arquivo `public/js/ibge-api.js` fornece:
-- `carregarEstados()`: Carrega todos os estados
-- `carregarCidades(uf, selectId)`: Carrega cidades por estado
-- `buscarCEP()`: Busca endereço por CEP (ViaCEP)
+**Endpoints utilizados:**
+- Estados: `https://servicodados.ibge.gov.br/api/v1/localidades/estados`
+- Municípios: `https://servicodados.ibge.gov.br/api/v1/localidades/estados/{UF}/municipios`
 
-## Segurança
+---
 
-- Senhas criptografadas com `password_hash()`
-- Proteção contra SQL Injection (PDO Prepared Statements)
-- Sanitização de inputs (`htmlspecialchars`)
-- Validação de CPF/CNPJ server-side e client-side
-- Sistema de sessões seguro
-- Proteção de páginas autenticadas
+## 🐛 Resolução de Problemas
 
-## Customização
+### Erro: "Erro na conexão com o banco de dados"
+- Verifique se o MySQL está rodando
+- Confirme usuário e senha no `config.php`
+- Certifique-se que o banco `borafrete` existe
 
-### Cores do Sistema
+### Erro: "Call to undefined function password_hash"
+- Atualize o PHP para versão 7.4 ou superior
 
-Edite as variáveis CSS em `public/css/style.css`:
+### Upload de imagens não funciona
+- Verifique permissões da pasta `public/uploads/`
+- No `php.ini`, certifique que `file_uploads = On`
 
-```css
-:root {
-    --primary-color: #0a2463;
-    --primary-dark: #061638;
-    --primary-light: #1e3a8a;
-    --secondary-color: #1d4ed8;
-    --accent-color: #3b82f6;
-}
-```
+### API IBGE não carrega
+- Verifique conexão com internet
+- Abra o console do navegador (F12) para ver erros
+- A API é pública e não requer autenticação
 
-### Adicionando Novas Páginas
+---
 
-1. Crie o arquivo PHP na raiz
-2. Inclua `config/config.php`
-3. Use `requireLogin()` se necessário autenticação
-4. Inclua header e footer:
+## 📝 Próximas Melhorias
 
-```php
-<?php
-require_once 'config/config.php';
-requireLogin();
+- [ ] Sistema de notificações em tempo real
+- [ ] Chat entre motoristas e transportadoras
+- [ ] Histórico de fretes realizados
+- [ ] Avaliações e reviews
+- [ ] Sistema de pagamento integrado
+- [ ] App mobile (PWA)
+- [ ] Rastreamento em tempo real
 
-$pageTitle = 'Minha Página';
-$showSidebar = true;
+---
 
-include 'views/layout/header.php';
-?>
+## 👨‍💻 Desenvolvimento
 
-<!-- Seu conteúdo aqui -->
+**Arquitetura:** MVC simplificado
+**Padrão de Código:** PSR-12
+**Banco de Dados:** Normalizado (3FN)
 
-<?php include 'views/layout/footer.php'; ?>
-```
+---
 
-## Suporte e Desenvolvimento
+## 📄 Licença
 
-Sistema desenvolvido como arquitetura monolítica tradicional, focado em:
-- Performance
-- Simplicidade
-- Manutenibilidade
-- Escalabilidade vertical
+Este projeto foi desenvolvido para fins educacionais e comerciais.
 
-## Próximas Implementações Sugeridas
+---
 
-- [ ] Listagem de veículos (meus-veiculos.php)
-- [ ] Listagem de ofertas (minhas-ofertas.php)
-- [ ] Busca de fretes (buscar-fretes.php)
-- [ ] Sistema de propostas (propostas.php)
-- [ ] Upload de documentos
-- [ ] Sistema de notificações
-- [ ] Exportação de relatórios (PDF/Excel)
-- [ ] API RESTful para integração mobile
+## 🆘 Suporte
 
-## Licença
+Para dúvidas ou problemas, consulte a documentação inline no código ou abra uma issue.
 
-Sistema proprietário - Todos os direitos reservados.
+---
+
+**Desenvolvido com ❤️ em PHP puro**

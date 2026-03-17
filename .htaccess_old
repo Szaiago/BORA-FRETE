@@ -1,60 +1,61 @@
-# Configuração Apache para Sistema de Logística
+# BORAFRETE - Apache Configuration
 
 # Habilitar Rewrite Engine
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
+    RewriteBase /borafrete/
 
-    # Redirecionar www para não-www (opcional)
-    # RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
-    # RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+    # Redirecionar para HTTPS (se disponível)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-    # Proteger arquivos de configuração
-    RewriteRule ^config/.*$ - [F,L]
-    RewriteRule ^processamento/.*$ - [F,L]
-    RewriteRule ^views/.*$ - [F,L]
-
-    # Permitir acesso apenas aos arquivos PHP da raiz e à pasta public
-    RewriteCond %{REQUEST_FILENAME} !-f
+    # Remover trailing slash
     RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)/$ /$1 [L,R=301]
 </IfModule>
 
-# Proteger arquivos sensíveis
-<FilesMatch "^(database\.sql|README\.md|\.gitignore)$">
+# Segurança - Bloquear acesso a arquivos sensíveis
+<FilesMatch "^\.">
     Order allow,deny
     Deny from all
 </FilesMatch>
 
-# Prevenir listagem de diretórios
-Options -Indexes
+# Bloquear acesso direto a arquivos de configuração
+<FilesMatch "(config\.php|\.env)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
 
-# Configurações de segurança
+# Configurações de segurança de cabeçalhos
 <IfModule mod_headers.c>
     # Prevenir clickjacking
-    Header always set X-Frame-Options "SAMEORIGIN"
+    Header set X-Frame-Options "SAMEORIGIN"
 
-    # Prevenir MIME type sniffing
-    Header always set X-Content-Type-Options "nosniff"
+    # Prevenir MIME sniffing
+    Header set X-Content-Type-Options "nosniff"
 
-    # Habilitar XSS Protection
-    Header always set X-XSS-Protection "1; mode=block"
+    # XSS Protection
+    Header set X-XSS-Protection "1; mode=block"
 
     # Referrer Policy
-    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
 
-# Configurações de cache para arquivos estáticos
+# Compressão GZIP
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Cache de arquivos estáticos
 <IfModule mod_expires.c>
     ExpiresActive On
 
     # Imagens
     ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/jpg "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
     ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
     ExpiresByType image/svg+xml "access plus 1 year"
-    ExpiresByType image/x-icon "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
 
     # CSS e JavaScript
     ExpiresByType text/css "access plus 1 month"
@@ -62,43 +63,19 @@ Options -Indexes
     ExpiresByType application/javascript "access plus 1 month"
 
     # Fontes
-    ExpiresByType font/woff2 "access plus 1 year"
     ExpiresByType font/woff "access plus 1 year"
-    ExpiresByType font/ttf "access plus 1 year"
-    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
 </IfModule>
 
-# Compressão GZIP
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html
-    AddOutputFilterByType DEFLATE text/css
-    AddOutputFilterByType DEFLATE text/javascript
-    AddOutputFilterByType DEFLATE text/xml
-    AddOutputFilterByType DEFLATE text/plain
-    AddOutputFilterByType DEFLATE application/javascript
-    AddOutputFilterByType DEFLATE application/x-javascript
-    AddOutputFilterByType DEFLATE application/json
-    AddOutputFilterByType DEFLATE application/xml
-    AddOutputFilterByType DEFLATE application/xhtml+xml
-    AddOutputFilterByType DEFLATE application/rss+xml
-    AddOutputFilterByType DEFLATE image/svg+xml
-</IfModule>
+# Configurações de upload
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+php_value max_execution_time 300
+php_value max_input_time 300
 
-# Configurações PHP
-<IfModule mod_php7.c>
-    php_value upload_max_filesize 20M
-    php_value post_max_size 20M
-    php_value max_execution_time 300
-    php_value max_input_time 300
-</IfModule>
-
-# Prevenir acesso direto a arquivos de processamento
-<FilesMatch "^(login|logout|salvar-.*).php$">
-    Order allow,deny
-    Allow from all
-</FilesMatch>
+# Desabilitar listagem de diretórios
+Options -Indexes
 
 # Página de erro customizada (opcional)
-# ErrorDocument 404 /404.php
-# ErrorDocument 403 /403.php
-# ErrorDocument 500 /500.php
+# ErrorDocument 404 /borafrete/404.php
+# ErrorDocument 500 /borafrete/500.php

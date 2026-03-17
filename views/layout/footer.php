@@ -1,21 +1,16 @@
-<?php if (isset($showSidebar) && $showSidebar === true): ?>
-            </div>
-            <!-- Fim do Conteúdo da Página -->
-        </main>
-        <!-- Fim do Conteúdo Principal -->
-    </div>
-    <!-- Fim do Main Wrapper -->
-<?php endif; ?>
+    </div><!-- end main-wrapper -->
 
-<!-- Bootstrap 5 JS Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p>Suporte 24/7 | Ajuda</p>
+            <p>&copy; <?php echo date('Y'); ?> <?php echo SITE_NAME; ?>. Todos os direitos reservados.</p>
+        </div>
+    </footer>
 
-<!-- Scripts Customizados -->
-<?php if (isset($customScripts) && is_array($customScripts)): ?>
-    <?php foreach ($customScripts as $script): ?>
-        <script src="public/js/<?php echo $script; ?>"></script>
-    <?php endforeach; ?>
-<?php endif; ?>
-
+    <script src="<?php echo BASE_URL; ?>public/js/main.js"></script>
+    <script src="<?php echo BASE_URL; ?>public/js/ibge.js"></script>
+    <?php if (isset($extraScripts)): ?>
+        <?php echo $extraScripts; ?>
+    <?php endif; ?>
 </body>
 </html>
