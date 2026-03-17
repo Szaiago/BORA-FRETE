@@ -21,6 +21,14 @@ $flashMessage = getFlashMessage();
     <title>Login - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>public/css/style.css">
 </head>
+<style> body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, var(--cinza-claro) 0%, #E0E7FF 100%);
+    color: var(--preto);
+    line-height: 1.6;
+    height: 100vh;
+    overflow: hidden;
+}</style>
 <body class="login-page">
 
     <div class="login-container">
