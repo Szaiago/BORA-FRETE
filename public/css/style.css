@@ -256,7 +256,7 @@ body {
 
 .input-icon {
     position: absolute;
-    left: -25px;
+    left: -4px;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
